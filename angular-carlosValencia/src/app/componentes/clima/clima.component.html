@@ -1,0 +1,158 @@
+<div class="component-container h-full flex flex-col">
+  <div class="flex-1 p-6">
+    <h1 class="text-3xl font-bold text-amber-800 mb-6">Clima para Cultivo</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Clima Actual -->
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold">Quito, Ecuador</h3>
+          <div class="text-4xl">🌤️</div>
+        </div>
+        <div class="text-4xl font-bold mb-2">22°C</div>
+        <p class="text-blue-100 mb-4">Parcialmente nublado</p>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="text-blue-200">Humedad:</span>
+            <span class="font-semibold">65%</span>
+          </div>
+          <div>
+            <span class="text-blue-200">Viento:</span>
+            <span class="font-semibold">12 km/h</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Condiciones para Cultivo -->
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+        <h3 class="text-xl font-semibold mb-4">Condiciones de Cultivo</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-green-200">Temperatura:</span>
+            <span class="font-semibold">Óptima</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-green-200">Humedad:</span>
+            <span class="font-semibold">Ideal</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-green-200">Lluvia:</span>
+            <span class="font-semibold">Moderada</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-green-200">Altitud:</span>
+            <span class="font-semibold">2,850m</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pronóstico -->
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+        <h3 class="text-xl font-semibold mb-4">Pronóstico 7 días</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-purple-200">Hoy:</span>
+            <span class="font-semibold">22°C / 15°C</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-purple-200">Mañana:</span>
+            <span class="font-semibold">24°C / 16°C</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-purple-200">Miércoles:</span>
+            <span class="font-semibold">21°C / 14°C</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-purple-200">Jueves:</span>
+            <span class="font-semibold">23°C / 15°C</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zonas de Cultivo -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Zonas de Cultivo</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div>
+              <span class="font-semibold text-gray-800">Loja</span>
+              <p class="text-sm text-gray-600">Altitud: 2,100m</p>
+            </div>
+            <span class="text-green-600 font-semibold">Excelente</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+            <div>
+              <span class="font-semibold text-gray-800">Manabí</span>
+              <p class="text-sm text-gray-600">Altitud: 150m</p>
+            </div>
+            <span class="text-yellow-600 font-semibold">Buena</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+            <div>
+              <span class="font-semibold text-gray-800">Guayas</span>
+              <p class="text-sm text-gray-600">Altitud: 4m</p>
+            </div>
+            <span class="text-red-600 font-semibold">Limitada</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recomendaciones -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Recomendaciones</h3>
+        <div class="space-y-3">
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-lg">✓</span>
+            <p class="text-sm text-gray-700">Condiciones ideales para cosecha</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-blue-500 text-lg">💧</span>
+            <p class="text-sm text-gray-700">Riego moderado recomendado</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-yellow-500 text-lg">☀️</span>
+            <p class="text-sm text-gray-700">Protección solar necesaria</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-purple-500 text-lg">📊</span>
+            <p class="text-sm text-gray-700">Monitoreo de humedad</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Estadísticas</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Producción estimada</span>
+              <span>85%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Calidad del grano</span>
+              <span>92%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 92%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Rendimiento</span>
+              <span>78%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-amber-500 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,190 @@
+<div class="min-h-screen bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full mb-6">
+        <span class="text-2xl">☕</span>
+      </div>
+      <h1 class="text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent">
+        Planes de Suscripción
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+        Descubre el café perfecto para ti. Recibe granos frescos, tostados a la perfección, 
+        directamente en tu puerta cada mes.
+      </p>
+    </div>
+
+    <!-- Current Subscription Status -->
+    <div *ngIf="suscripcionUsuario" class="mb-12">
+      <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-200">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Tu Suscripción Actual</h2>
+          <span class="px-4 py-2 rounded-full text-sm font-bold"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': suscripcionUsuario.estado === 'activa',
+                  'bg-yellow-100 text-yellow-800': suscripcionUsuario.estado === 'pausada',
+                  'bg-red-100 text-red-800': suscripcionUsuario.estado === 'cancelada'
+                }">
+            {{ suscripcionUsuario.estado | titlecase }}
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6">
+            <h3 class="font-bold text-gray-900 mb-2">{{ suscripcionUsuario.plan?.nombre }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ suscripcionUsuario.plan?.descripcion }}</p>
+            <div class="text-2xl font-bold text-amber-600">${{ suscripcionUsuario.plan?.precio_mensual }}/mes</div>
+          </div>
+          
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+            <h3 class="font-bold text-gray-900 mb-2">Próxima Entrega</h3>
+            <p class="text-gray-600 text-sm mb-2">{{ suscripcionUsuario.fecha_proxima_entrega | date:'longDate' }}</p>
+            <div class="text-lg font-semibold text-blue-600">{{ suscripcionUsuario.plan?.cantidad_cafe }} kg de café</div>
+          </div>
+          
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+            <h3 class="font-bold text-gray-900 mb-2">Frecuencia</h3>
+            <p class="text-gray-600 text-sm mb-2">{{ suscripcionUsuario.plan?.frecuencia_entrega }}</p>
+            <div class="text-lg font-semibold text-green-600">Desde {{ suscripcionUsuario.fecha_inicio | date:'shortDate' }}</div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 mt-6">
+          <button *ngIf="suscripcionUsuario.estado === 'activa'"
+                  (click)="pausarSuscripcion()"
+                  class="px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition-colors">
+            ⏸️ Pausar Suscripción
+          </button>
+          <button *ngIf="suscripcionUsuario.estado === 'pausada'"
+                  (click)="reactivarSuscripcion()"
+                  class="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors">
+            ▶️ Reactivar Suscripción
+          </button>
+          <button (click)="cancelarSuscripcion()"
+                  class="px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors">
+            ❌ Cancelar Suscripción
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="cargando" class="flex justify-center items-center py-20">
+      <div class="flex flex-col items-center space-y-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+        <p class="text-lg text-gray-600 font-medium">Cargando planes...</p>
+      </div>
+    </div>
+
+    <!-- Plans Grid -->
+    <div *ngIf="!cargando && !suscripcionUsuario" class="flex flex-col md:flex-row md:justify-center md:items-stretch gap-6 md:gap-8 mb-16">
+      <div 
+        *ngFor="let plan of planes; trackBy: trackById" 
+        class="relative group flex-1 min-w-0 max-w-xs md:max-w-sm mx-auto"
+        [ngClass]="{'lg:col-span-2 lg:row-span-2': plan.popular}"
+      >
+        <!-- Popular Badge -->
+        <div *ngIf="plan.popular" class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+            ⭐ MÁS POPULAR
+          </div>
+        </div>
+
+        <!-- Plan Card -->
+        <div class="bg-white rounded-2xl shadow-xl border-2 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 h-full px-2 md:px-4"
+             [ngClass]="{
+               'border-amber-500 scale-105': plan.popular,
+               'border-gray-200 hover:border-amber-300': !plan.popular
+             }">
+          
+          <!-- Header -->
+          <div class="p-4 md:p-6 text-center border-b border-gray-100">
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">{{ plan.nombre }}</h3>
+            <div class="flex items-baseline justify-center mb-4 md:mb-6">
+              <span class="text-xl md:text-2xl font-semibold text-gray-500">$</span>
+              <span class="text-4xl md:text-6xl font-bold text-gray-900 mx-1 md:mx-2">{{ plan.precio_mensual }}</span>
+              <span class="text-lg md:text-xl text-gray-500">/mes</span>
+            </div>
+            <p class="text-gray-600 text-base md:text-lg leading-relaxed">{{ plan.descripcion }}</p>
+          </div>
+
+          <!-- Content -->
+          <div class="p-8">
+            <!-- Features -->
+            <div class="mb-8">
+              <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="mr-2">✨</span>
+                Beneficios incluidos
+              </h4>
+              <ul class="space-y-3">
+                <li class="flex items-start" *ngFor="let beneficio of plan.beneficios">
+                  <span class="text-green-500 font-bold mr-3 text-lg mt-0.5">✓</span>
+                  <span class="text-gray-700">{{ beneficio }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Coffee Details -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 mb-8">
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="font-semibold text-gray-700">Cantidad de café:</span>
+                  <span class="text-gray-900 font-medium">{{ plan.cantidad_cafe }} kg</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-semibold text-gray-700">Frecuencia:</span>
+                  <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-bold">
+                    {{ plan.frecuencia_entrega }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <button 
+              class="w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-amber-300"
+              [ngClass]="{
+                'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 shadow-lg hover:shadow-xl': plan.popular,
+                'bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-700 hover:to-gray-800 shadow-md hover:shadow-lg': !plan.popular
+              }"
+              (click)="seleccionarPlan(plan)">
+              <span class="flex items-center justify-center">
+                <span class="mr-2">🚀</span>
+                Seleccionar Plan
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="text-center bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+      <h3 class="text-2xl font-bold text-gray-900 mb-4">¿Por qué elegir CoffeCraft?</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center mb-4">
+            <span class="text-xl">🌱</span>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2">Granos Frescos</h4>
+          <p class="text-gray-600 text-sm">Tostados artesanalmente cada semana</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center mb-4">
+            <span class="text-xl">🚚</span>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2">Envío Gratis</h4>
+          <p class="text-gray-600 text-sm">Entregas programadas a tu puerta</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center mb-4">
+            <span class="text-xl">🎯</span>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2">Personalizado</h4>
+          <p class="text-gray-600 text-sm">Adaptado a tus preferencias</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

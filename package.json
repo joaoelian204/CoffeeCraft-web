@@ -1,0 +1,24 @@
+{
+  "name": "coffeecraft-microfrontend",
+  "version": "1.0.0",
+  "description": "CoffeCraft Ecuador Microfrontend Application",
+  "scripts": {
+    "install:all": "npm install && cd coffeecraft-shell && npm install && cd ../react-joaoMoreira && npm install && cd ../angular-carlosValencia && npm install --legacy-peer-deps && cd ../Vue-JoseSarabia && npm install",
+    "start:shell": "cd coffeecraft-shell && npm start",
+    "start:react": "cd react-joaoMoreira && npm run dev",
+    "start:angular": "cd angular-carlosValencia && npm start",
+    "start:vue": "cd Vue-JoseSarabia && npm run dev",
+    "start": "concurrently \"npm run start:shell\" \"npm run start:react\" \"npm run start:angular\" \"npm run start:vue\"",
+    "build:shell": "cd coffeecraft-shell && npm run build",
+    "build:react": "cd react-joaoMoreira && npm run build",
+    "build:angular": "cd angular-carlosValencia && npm run build",
+    "build:vue": "cd Vue-JoseSarabia && npm run build",
+    "build": "npm run build:shell && npm run build:react && npm run build:angular && npm run build:vue",
+    "build:all": "npm run build",
+    "copy-microfrontends": "node -e \"const fs=require('fs');const path=require('path');const src='react-joaoMoreira/dist';const dest='coffeecraft-shell/dist/react';if(!fs.existsSync(dest))fs.mkdirSync(dest,{recursive:true});require('fs-extra').copySync(src,dest,{overwrite:true});\" && node -e \"const fs=require('fs');const path=require('path');const src='angular-carlosValencia/dist';const dest='coffeecraft-shell/dist/angular';if(!fs.existsSync(dest))fs.mkdirSync(dest,{recursive:true});require('fs-extra').copySync(src,dest,{overwrite:true});\" && node -e \"const fs=require('fs');const path=require('path');const src='Vue-JoseSarabia/dist';const dest='coffeecraft-shell/dist/vue';if(!fs.existsSync(dest))fs.mkdirSync(dest,{recursive:true});require('fs-extra').copySync(src,dest,{overwrite:true});\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "fs-extra": "^11.2.0"
+  }
+} 

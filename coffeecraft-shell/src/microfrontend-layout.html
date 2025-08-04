@@ -1,0 +1,56 @@
+<single-spa-router>
+  <!--
+    Layout de microfrontends para CoffeCraft Ecuador
+    Este layout define las rutas y aplicaciones que se cargarán en cada sección
+  -->
+
+  <!-- Ruta principal - Dashboard/Bienvenida (sin microfrontend welcome) -->
+  <route default>
+    <!-- Aquí no se carga ningún microfrontend, solo el dashboard del shell -->
+  </route>
+
+  <!-- Ruta del catálogo de cafés -->
+  <route path="catalogo">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta de experiencias y tours -->
+  <route path="experiencias">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta de recomendaciones -->
+  <route path="recomendaciones">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta del carrito de compras -->
+  <route path="carrito">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta de suscripciones -->
+  <route path="suscripciones">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta del perfil de usuario -->
+  <route path="perfil">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Rutas de autenticación -->
+  <route path="login">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <route path="registro">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+  <!-- Ruta de configuración/administración -->
+  <route path="admin">
+    <application name="catalogoModule/single-spa-entry"></application>
+  </route>
+
+</single-spa-router>

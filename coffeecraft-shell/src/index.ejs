@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CoffeCraft Ecuador - Shell</title>
+  
+  <!-- Tailwind CSS - Versión más reciente y confiable -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'cafe': {
+              50: '#fdf8f6',
+              100: '#f2e8e5',
+              200: '#eaddd7',
+              300: '#e0cfc5',
+              400: '#d2bab0',
+              500: '#bfa094',
+              600: '#a08072',
+              700: '#8b6f56',
+              800: '#6d5a47',
+              900: '#4a3f33',
+              950: '#2d211a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Configuración de seguridad -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: localhost:* 127.0.0.1:* data:; script-src 'unsafe-inline' 'unsafe-eval' https: localhost:* 127.0.0.1:*; connect-src https: localhost:* ws://localhost:* 127.0.0.1:*; style-src 'unsafe-inline' https:; img-src 'self' https: data:; object-src 'none';">
+  <meta name="importmap-type" use-injector />
+
+  <!-- SystemJS para Module Federation -->
+  <script src="https://cdn.jsdelivr.net/npm/systemjs@6.14.2/dist/system.min.js"></script>
+  
+  <!-- Import map para SystemJS -->
+  <script type="systemjs-importmap">
+    {
+      "imports": {
+        "catalogoModule/single-spa-entry": "/react/remoteEntry.js"
+      }
+    }
+  </script>
+  <!-- Scripts necesarios -->
+  <script src="https://cdn.jsdelivr.net/npm/import-map-overrides@5.1.1/dist/import-map-overrides.js"></script>
+  
+  <!-- Supabase y Autenticación -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+
+  <style>
+    /* Estilos personalizados para transiciones y efectos */
+    .menu-transition {
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .blur-backdrop {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Animaciones personalizadas */
+    @keyframes bounce-custom {
+      0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+      40%, 43% { transform: translate3d(0,-30px,0); }
+      70% { transform: translate3d(0,-15px,0); }
+      90% { transform: translate3d(0,-4px,0); }
+    }
+
+    .animate-bounce-custom {
+      animation: bounce-custom 1s ease-in-out infinite;
+    }
+
+    /* Carga suave */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll suave */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Asegurar que los gradientes se apliquen correctamente */
+    .bg-gradient-to-br {
+      background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+    }
+    
+    .bg-gradient-to-r {
+      background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    }
+
+    /* Colores de respaldo para asegurar que se muestren */
+    .from-stone-50 { --tw-gradient-from: #fafaf9; }
+    .via-emerald-50 { --tw-gradient-via: #ecfdf5; }
+    .to-amber-50 { --tw-gradient-to: #fffbeb; }
+    
+    .from-stone-900 { --tw-gradient-from: #1c1917; }
+    .via-stone-800 { --tw-gradient-via: #292524; }
+    .to-emerald-900 { --tw-gradient-to: #064e3b; }
+    
+    .from-amber-500 { --tw-gradient-from: #f59e0b; }
+    .to-emerald-500 { --tw-gradient-to: #10b981; }
+    
+    .from-amber-400 { --tw-gradient-from: #fbbf24; }
+    .to-emerald-400 { --tw-gradient-to: #34d399; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50">
+  <noscript>
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50">
+      <div class="text-center space-y-4 p-8">
+        <div class="text-6xl">☕</div>
+        <h2 class="text-2xl font-bold text-stone-800">CoffeCraft Ecuador</h2>
+        <p class="text-stone-600">Necesitas habilitar JavaScript para ejecutar esta aplicación.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <!-- Pantalla de carga inicial -->
+  <div id="loading-screen" class="fixed inset-0 z-50 min-h-screen bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50 flex items-center justify-center">
+    <div class="text-center space-y-8 fade-in">
+      <div class="relative">
+        <div class="w-32 h-32 bg-gradient-to-br from-amber-600 via-orange-600 to-yellow-600 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse border-4 border-amber-400">
+          <div class="w-16 h-16 bg-amber-100 rounded-2xl shadow-inner"></div>
+        </div>
+        <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-bounce-custom border-2 border-white"></div>
+      </div>
+      <div>
+        <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-orange-700 to-amber-600 mb-4">
+          Iniciando CoffeCraft
+        </h2>
+        <p class="text-amber-700 text-xl">
+          Cargando el Shell y configurando micro-frontends...
+        </p>
+      </div>
+      <div class="flex justify-center space-x-3">
+        <div class="w-4 h-4 bg-amber-500 rounded-full animate-bounce shadow-lg"></div>
+        <div class="w-4 h-4 bg-orange-500 rounded-full animate-bounce shadow-lg" style="animation-delay: 0.1s"></div>
+        <div class="w-4 h-4 bg-yellow-500 rounded-full animate-bounce shadow-lg" style="animation-delay: 0.2s"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aplicación principal -->
+  <div id="app" class="hidden min-h-screen">
+    <!-- Header con navegación -->
+    <header class="sticky top-0 z-50 bg-gradient-to-r from-stone-900 via-stone-800 to-emerald-900 shadow-2xl border-b-4 border-amber-600 blur-backdrop">
+      <nav class="relative">      
+        <div class="container mx-auto px-6">
+          <div class="flex items-center justify-between h-16">
+            <!-- Brand Section -->
+            <div class="flex items-center space-x-3">
+              <div class="relative">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                  ☕
+                </div>
+                <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full"></div>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">
+                  CoffeCraft
+                </h1>
+                <p class="text-stone-400 text-xs">Ecuador Premium</p>
+              </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden lg:flex items-center space-x-1" id="desktop-nav">
+              <!-- Los módulos se cargarán dinámicamente -->
+            </div>
+
+            <!-- Auth Buttons -->
+            <div class="hidden lg:flex items-center space-x-2" id="auth-section">
+              <div class="flex items-center space-x-2">
+                <button id="login-btn" onclick="handleLogin()" class="px-4 py-2 text-stone-400 hover:text-white hover:bg-stone-800/40 rounded-lg transition-all duration-200 text-sm font-medium">
+                  Iniciar Sesión
+                </button>
+                <button id="register-btn" onclick="handleLogin()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-lg hover:from-amber-600 hover:to-emerald-600 transition-all duration-200 text-sm font-medium shadow-sm">
+                  Registrarse
+                </button>
+                
+                <!-- User Menu (hidden by default) -->
+                <div id="user-menu" class="hidden relative">
+                  <button class="flex items-center space-x-2 px-4 py-2 text-stone-400 hover:text-white hover:bg-stone-800/40 rounded-lg transition-all duration-200 text-sm font-medium">
+                    <span>👤</span>
+                    <span id="user-name">Usuario</span>
+                    <span>▼</span>
+                  </button>
+                  <div class="absolute right-0 mt-2 w-48 bg-stone-800 rounded-lg shadow-lg py-2 z-50">
+                    <div class="px-4 py-2 text-stone-300 text-sm">
+                      <div id="user-email">usuario@email.com</div>
+                    </div>
+                    <hr class="border-stone-600 my-2">
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-stone-300 hover:text-white hover:bg-stone-700 transition-colors duration-200 text-sm">
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button 
+              id="mobile-menu-button"
+              class="lg:hidden relative p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800/40 transition-all duration-200"
+            >
+              <div class="w-5 h-5 flex flex-col justify-center items-center">
+                <span class="mobile-menu-line bg-current block transition-all duration-300 h-0.5 w-5 rounded-sm -translate-y-0.5"></span>
+                <span class="mobile-menu-line bg-current block transition-all duration-300 h-0.5 w-5 rounded-sm my-0.5"></span>
+                <span class="mobile-menu-line bg-current block transition-all duration-300 h-0.5 w-5 rounded-sm translate-y-0.5"></span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Mobile Navigation -->
+          <div id="mobile-menu" class="lg:hidden overflow-hidden transition-all duration-300 max-h-0">
+            <div class="bg-stone-800/90 blur-backdrop rounded-lg p-3 mt-3 space-y-2">
+              <!-- Navigation Modules -->
+              <div id="mobile-nav-modules">
+                <!-- Los módulos se cargarán dinámicamente -->
+              </div>
+              
+              <!-- Divider -->
+              <div class="border-t border-stone-600/50 pt-3">
+                <div class="space-y-2">
+                  <button onclick="handleLogin()" class="w-full p-3 text-stone-300 hover:text-white hover:bg-stone-700/50 rounded-lg transition-all duration-200 text-sm font-medium">
+                    Iniciar Sesión
+                  </button>
+                  <button onclick="handleLogin()" class="w-full p-3 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-lg hover:from-amber-600 hover:to-emerald-600 transition-all duration-200 text-sm font-medium">
+                    Registrarse
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Área principal donde se cargarán los micro-frontends -->
+    <main class="container mx-auto px-6 py-12 max-w-7xl">
+      <!-- Pantalla de bienvenida (requiere autenticación) -->
+      <div id="welcome-screen" class="min-h-screen flex items-center justify-center">
+        <div class="text-center space-y-8 max-w-2xl">
+          <!-- Logo -->
+          <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-emerald-500 rounded-3xl flex items-center justify-center text-4xl mx-auto shadow-2xl">
+            ☕
+          </div>
+          
+          <!-- Título -->
+          <h1 class="text-4xl lg:text-5xl font-bold text-stone-800">
+            Bienvenido a CoffeCraft
+          </h1>
+          
+          <!-- Subtítulo -->
+          <p class="text-xl text-stone-600 leading-relaxed">
+            Descubre el sabor auténtico del café ecuatoriano. 
+            Inicia sesión o regístrate para acceder a nuestros productos premium.
+          </p>
+          
+          <!-- Botones de acción -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+            <button onclick="handleLogin()" class="px-8 py-4 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-xl hover:from-amber-600 hover:to-emerald-600 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 text-lg">
+              Iniciar Sesión
+            </button>
+            <button onclick="handleLogin()" class="px-8 py-4 bg-white text-stone-800 border-2 border-stone-300 rounded-xl hover:bg-stone-50 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 text-lg">
+              Registrarse
+            </button>
+          </div>
+          
+          <!-- Información adicional -->
+          <div class="mt-12 p-6 bg-gradient-to-r from-amber-50 to-emerald-50 rounded-2xl border border-amber-200">
+            <h3 class="text-lg font-semibold text-stone-800 mb-3">¿Por qué CoffeCraft?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-stone-600">
+              <div class="flex items-center space-x-2">
+                <span class="text-amber-500">🌱</span>
+                <span>Café de origen único</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-emerald-500">🌍</span>
+                <span>Producción sostenible</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-amber-500">🤝</span>
+                <span>Comercio justo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard por defecto cuando está en la ruta raíz (oculto inicialmente) -->
+      <div id="dashboard-content" class="min-h-screen hidden">
+        <!-- Hero Section -->
+        <div class="relative min-h-screen overflow-hidden">
+          <!-- Background con imagen de café -->
+          <div class="absolute inset-0 rounded-3xl overflow-hidden">
+            <img 
+              src="https://d1xwsne3emv8k7.cloudfront.net/CnsKICAgICJidWNrZXQiOiAiYXloeDR5czUtaW1hZ2VzIiwKICAgICJrZXkiOiAiMjAxOS0wMi9lbmNhYmV6YWRvIHBhZyB3ZWIgKDE2KS5wbmciLAogICAgImVkaXRzIjogewogICAgICAicmVzaXplIjogewogICAgICAgIAogICAgICAgIAogICAgICAgICJmaXQiOiAiY29udGFpbiIsCiAgICAgICAgImJhY2tncm91bmQiOiB7CiAgICAgICAgICAiciI6IDAsCiAgICAgICAgICAiZyI6IDAsCiAgICAgICAgICAiYiI6IDAsCiAgICAgICAgICAiYWxwaGEiOiAwCiAgICAgICAgfQogICAgICB9CiAgICB9Cn0K"
+              alt="Café ecuatoriano premium"
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <!-- Overlay para mejorar legibilidad del texto -->
+            <div class="absolute inset-0 bg-gradient-to-br from-stone-900/60 via-emerald-900/50 to-amber-900/60"></div>
+          </div>
+          
+          <!-- Overlay decorativo -->
+          <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-200/10 to-emerald-200/10 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-br from-emerald-200/10 to-stone-200/10 rounded-full blur-2xl"></div>
+          
+          <div class="relative flex items-center min-h-screen px-6">
+            <div class="container mx-auto max-w-7xl">
+              <div class="grid lg:grid-cols-1 gap-12 items-center">
+                <!-- Contenido de texto -->
+                <div class="space-y-8 text-white max-w-4xl mx-auto text-center">
+                  <!-- Badge -->
+                  <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold border border-white/30">
+                    <span class="text-amber-300">🇪🇨</span>
+                    <span>Café de Origen Ecuatoriano</span>
+                  </div>
+                  
+                  <!-- Título principal -->
+                  <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight text-white drop-shadow-lg">
+                    Desde las montañas de Ecuador hasta tu taza
+                  </h1>
+                  
+                  <!-- Subtítulos -->
+                  <div class="space-y-4 text-lg text-white/90">
+                    <p class="text-xl">
+                      Compra café de calidad superior, cultivado ética y sosteniblemente en los Andes ecuatorianos.
+                    </p>
+                    <p class="text-lg">
+                      Cada sorbo contiene aromas auténticos y preciosos, apoyando a las comunidades locales y protegiendo la biodiversidad.
+                    </p>
+                  </div>
+
+                  <!-- Llamado a la acción -->
+                  <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button onclick="navegarA('/catalogo')" class="px-8 py-4 bg-gradient-to-r from-amber-600 to-emerald-600 text-white rounded-xl hover:from-amber-700 hover:to-emerald-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 text-lg">
+                      Descubre nuestros productos
+                    </button>
+                    <button onclick="navegarA('/experiencias')" class="px-8 py-4 bg-white/20 text-white border-2 border-white/30 rounded-xl hover:bg-white/30 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 text-lg backdrop-blur-sm">
+                      Vive una Experiencia
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Elementos decorativos -->
+                <div class="relative lg:block">
+                  <div class="relative">
+                    <!-- Elementos decorativos -->
+                    <div class="absolute -top-4 -right-4 w-8 h-8 bg-amber-400 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-4 -left-4 w-6 h-6 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de contenido -->
+        <div class="bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50 py-20">
+          <div class="container mx-auto px-6 max-w-4xl text-center">
+            <h2 class="text-4xl lg:text-5xl font-bold text-stone-800 mb-4">
+              Descubre el sabor auténtico de Ecuador
+            </h2>
+            
+            <!-- Línea decorativa -->
+            <div class="w-24 h-1 bg-gradient-to-r from-amber-500 to-emerald-500 mx-auto mb-8"></div>
+            
+            <div class="space-y-6 text-stone-600 text-lg leading-relaxed">
+              <p>
+                Descubre todos los sabores de Ecuador con nuestros cafés premium, tés y cacao de especialidad.
+              </p>
+              <p>
+                Cada producto es seleccionado por su sabor único, respetando las tradiciones locales y asegurando una cadena de suministro justa y sostenible. Trabajamos directamente con los productores para ofrecer una experiencia de sabor inconfundible, que realza la riqueza y variedad de los suelos ecuatorianos.
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <!-- Contenedores para los micro-frontends -->
+
+      
+      <!-- Contenedor para iframe del microfrontend React -->
+      <div id="microfrontend-container" style="display: none;">
+        <iframe 
+          id="microfrontend-iframe" 
+          src="http://localhost:3001" 
+          style="width: 100%; border: none;"
+          scrolling="no"
+          title="CoffeCraft React Microfrontend">
+        </iframe>
+      </div>
+
+      <!-- Contenedor para módulo Angular -->
+      <div id="angular-container" style="display: none;">
+        <iframe 
+          id="angular-iframe" 
+          src="http://localhost:3002?microfrontend=true" 
+          style="width: 100%; height: 800px; border: none; overflow: hidden;"
+          scrolling="no"
+          title="CoffeCraft Angular Microfrontend">
+        </iframe>
+      </div>
+
+      <!-- Contenedor para módulo Vue -->
+      <div id="vue-container" style="display: none;">
+        <iframe 
+          id="vue-iframe" 
+          src="http://localhost:3003" 
+          style="width: 100%; height: 100vh; border: none; overflow: hidden; min-height: 600px;"
+          scrolling="no"
+          title="CoffeCraft Vue Microfrontend">
+        </iframe>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 text-stone-100 mt-20">
+      <div class="h-1 bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-600"></div>
+      
+      <div class="container mx-auto px-6 py-16">
+        <div class="grid md:grid-cols-4 gap-12">
+          <div class="md:col-span-2 space-y-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center text-2xl">
+                ☕
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">
+                  CoffeCraft Ecuador
+                </h3>
+                <p class="text-stone-400 text-sm">Café Artesanal de Altura</p>
+              </div>
+            </div>
+            <p class="text-stone-300 leading-relaxed max-w-md">
+              Descubre la excelencia del café ecuatoriano. Desde las montañas andinas hasta tu taza, 
+              cada grano cuenta una historia de tradición, calidad y pasión.
+            </p>
+            <div class="flex space-x-4">
+              <div class="flex items-center space-x-2 text-stone-400">
+                <span class="text-emerald-400">🌱</span>
+                <span class="text-sm">100% Orgánico</span>
+              </div>
+              <div class="flex items-center space-x-2 text-stone-400">
+                <span class="text-amber-400">🏔️</span>
+                <span class="text-sm">Altura Premium</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <h4 class="text-xl font-bold text-amber-400 border-b border-stone-700 pb-2">
+              Nuestros Módulos
+            </h4>
+            <div class="space-y-4">
+              <div class="group flex items-start space-x-3 hover:text-emerald-400 transition-colors duration-200 cursor-pointer">
+                <span class="text-2xl group-hover:scale-110 transition-transform duration-200">☕</span>
+                <div>
+                  <p class="font-medium">Catálogo Premium</p>
+                  <p class="text-sm text-stone-400">Cafés de especialidad seleccionados</p>
+                </div>
+              </div>
+
+                              <div class="group flex items-start space-x-3 hover:text-emerald-400 transition-colors duration-200 cursor-pointer">
+                  <span class="text-2xl group-hover:scale-110 transition-transform duration-200">🛒</span>
+                  <div>
+                    <p class="font-medium">Carrito Inteligente</p>
+                    <p class="text-sm text-stone-400">Compras fáciles y seguras</p>
+                  </div>
+                </div>
+                <div class="group flex items-start space-x-3 hover:text-emerald-400 transition-colors duration-200 cursor-pointer">
+                  <span class="text-2xl group-hover:scale-110 transition-transform duration-200">🌄</span>
+                  <div>
+                    <p class="font-medium">Experiencias Únicas</p>
+                    <p class="text-sm text-stone-400">Tours y catas exclusivas</p>
+                  </div>
+                </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <div class="pt-4 border-t border-stone-700">
+                <p class="text-stone-500 text-xs mt-1">© 2025 CoffeCraft Ecuador</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- JavaScript para funcionalidad -->
+  <script>
+
+
+
+
+    // Configuración de rutas y módulos
+    const RUTAS = {
+      INICIO: '/',
+      CATALOGO: '/catalogo',
+      CARRITO: '/carrito',
+      PERFIL: '/perfil',
+      HISTORIAL: '/historial',
+      UBICACION: '/ubicacion',
+      EXPERIENCIAS: '/experiencias',
+      RECOMENDACION: '/recomendacion',
+      SUSCRIPCIONES: '/suscripciones'
+    };
+
+    const modules = [
+      {
+        id: 'inicio',
+        name: 'Inicio',
+        ruta: RUTAS.INICIO,
+        icon: '🏠',
+        description: 'Página principal',
+        color: 'from-stone-500 to-slate-600',
+        public: true
+      },
+      {
+        id: 'catalogo',
+        name: 'Catálogo',
+        ruta: RUTAS.CATALOGO,
+        icon: '☕',
+        description: 'Cafés Premium',
+        color: 'from-amber-500 to-yellow-600',
+        public: true
+      },
+      {
+        id: 'experiencias',
+        name: 'Experiencias',
+        ruta: RUTAS.EXPERIENCIAS,
+        icon: '🌄',
+        description: 'Tours exclusivos',
+        color: 'from-emerald-500 to-green-600',
+        public: true
+      },
+      {
+        id: 'suscripciones',
+        name: 'Suscripciones',
+        ruta: RUTAS.SUSCRIPCIONES,
+        icon: '📦',
+        description: 'Planes mensuales',
+        color: 'from-amber-500 to-orange-600',
+        public: true,
+        microfrontend: 'angular'
+      },
+      {
+        id: 'carrito',
+        name: 'Carrito',
+        ruta: RUTAS.CARRITO,
+        icon: '🛒',
+        description: 'Tus compras',
+        color: 'from-stone-500 to-slate-600',
+        public: true,
+        microfrontend: 'angular'
+      },
+      {
+        id: 'clima',
+        name: 'Clima',
+        ruta: '/clima',
+        icon: '🌤️',
+        description: 'Información del clima',
+        color: 'from-blue-500 to-cyan-600',
+        public: true,
+        microfrontend: 'angular'
+      },
+      {
+        id: 'perfil',
+        name: 'Perfil',
+        ruta: RUTAS.PERFIL,
+        icon: '👤',
+        description: 'Tu cuenta',
+        color: 'from-emerald-500 to-teal-600',
+        public: false
+      },
+      {
+        id: 'historial',
+        name: 'Historial',
+        ruta: RUTAS.HISTORIAL,
+        icon: '📋',
+        description: 'Tu historial',
+        color: 'from-amber-500 to-orange-600',
+        public: false
+      },
+      {
+        id: 'recomendacion',
+        name: 'Recomendaciones',
+        ruta: RUTAS.RECOMENDACION,
+        icon: '🎯',
+        description: 'Recomendaciones personalizadas',
+        color: 'from-purple-500 to-pink-600',
+        public: true
+      }
+    ];
+
+    let rutaActiva = '/';
+    let mobileMenuOpen = false;
+
+    // Funciones de utilidad
+    function renderDesktopNav() {
+      const desktopNav = document.getElementById('desktop-nav');
+      desktopNav.innerHTML = modules.map(module => `
+        <button
+          class="relative group px-3 py-2 rounded-lg transition-all duration-200 nav-button ${
+            rutaActiva === module.ruta
+              ? `bg-gradient-to-r ${module.color} text-white shadow-md`
+              : 'text-stone-400 hover:text-white hover:bg-stone-800/40'
+          }"
+          data-ruta="${module.ruta}"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="text-sm">${module.icon}</span>
+            <span class="font-medium text-sm">${module.name}</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function renderMobileNav() {
+      const mobileNavModules = document.getElementById('mobile-nav-modules');
+      mobileNavModules.innerHTML = modules.map(module => `
+        <button
+          class="w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 mobile-nav-button ${
+            rutaActiva === module.ruta
+              ? `bg-gradient-to-r ${module.color} text-white`
+              : 'text-stone-300 hover:text-white hover:bg-stone-700/50'
+          }"
+          data-ruta="${module.ruta}"
+        >
+          <span class="text-lg">${module.icon}</span>
+          <span class="font-medium text-sm">${module.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function mostrarContenido(ruta) {
+      console.log('🔄 Mostrando contenido para ruta:', ruta);
+      
+      // Ocultar todo el contenido
+      const dashboardContent = document.getElementById('dashboard-content');
+      const microfrontendContainer = document.getElementById('microfrontend-container');
+      const angularContainer = document.getElementById('angular-container');
+      const vueContainer = document.getElementById('vue-container');
+      
+      dashboardContent.style.display = 'none';
+      if (microfrontendContainer) {
+        microfrontendContainer.style.display = 'none';
+      }
+      if (angularContainer) {
+        angularContainer.style.display = 'none';
+      }
+      if (vueContainer) {
+        vueContainer.style.display = 'none';
+      }
+
+      // Mostrar el contenido apropiado
+      if (ruta === '/') {
+        dashboardContent.style.display = 'block';
+        console.log('✅ Mostrando dashboard principal');
+      } else if (ruta === '/perfil' || ruta === '/historial' || ruta === '/ubicacion') {
+        // Cargar módulo Vue para las rutas perfil, historial y ubicación
+        loadVueModule(ruta);
+      } else if (ruta === '/carrito' || ruta === '/suscripciones' || ruta === '/clima') {
+        // Cargar módulo Angular para estas rutas específicas
+        loadAngularModule(ruta);
+      } else if (ruta === '/catalogo' || ruta === '/experiencias' || ruta === '/recomendacion') {
+        // Mostrar el iframe del microfrontend React para rutas específicas
+        if (microfrontendContainer) {
+          microfrontendContainer.style.display = 'block';
+          console.log('✅ Mostrando iframe del microfrontend React');
+          
+          // Actualizar la URL del iframe según la ruta
+          const iframe = document.getElementById('microfrontend-iframe');
+          if (iframe) {
+            // Mapear las rutas del shell a las rutas del microfrontend
+            let microfrontendRuta = '/';
+            if (ruta === '/catalogo') {
+              microfrontendRuta = '/catalogo';
+            } else if (ruta === '/experiencias') {
+              microfrontendRuta = '/experiencias';
+            } else if (ruta === '/recomendacion') {
+              microfrontendRuta = '/recomendacion';
+            }
+            
+            iframe.src = `http://localhost:3001${microfrontendRuta}`;
+            console.log(`🔄 Cargando microfrontend React en: http://localhost:3001${microfrontendRuta}`);
+            
+            // El iframe usa altura fija de 100vh
+            iframe.onload = function() {
+              console.log('✅ Iframe cargado:', iframe.src);
+            };
+          }
+        } else {
+          console.log('❌ Contenedor del microfrontend no encontrado');
+        }
+      } else {
+        // Ruta no encontrada, mostrar dashboard
+        console.log('⚠️ Ruta no encontrada, mostrando dashboard');
+        dashboardContent.style.display = 'block';
+      }
+    }
+
+    function navegarA(ruta) {
+      // Permitir navegación sin autenticación (temporal)
+      console.log('🔄 Navegando a:', ruta, '(sin verificación de autenticación)');
+      
+      rutaActiva = ruta;
+      
+      console.log('🔄 Navegando a:', ruta);
+      
+      // Actualizar navegación
+      renderDesktopNav();
+      renderMobileNav();
+      
+      // Mostrar contenido apropiado
+      mostrarContenido(ruta);
+      
+      // Navegar usando history API
+      window.history.pushState({}, '', ruta);
+      
+      console.log('✅ Navegación completada');
+    }
+
+    // Función para cargar módulo Angular
+    async function loadAngularModule(ruta) {
+      try {
+        console.log('🔄 Cargando módulo Angular para ruta:', ruta);
+        
+        // Ocultar otros contenedores
+        const dashboardContent = document.getElementById('dashboard-content');
+        const microfrontendContainer = document.getElementById('microfrontend-container');
+        const angularContainer = document.getElementById('angular-container');
+        const vueContainer = document.getElementById('vue-container');
+        
+        dashboardContent.style.display = 'none';
+        if (microfrontendContainer) {
+          microfrontendContainer.style.display = 'none';
+        }
+        if (vueContainer) {
+          vueContainer.style.display = 'none';
+        }
+        angularContainer.style.display = 'block';
+        
+        // Obtener el iframe de Angular
+        const iframe = document.getElementById('angular-iframe');
+        if (iframe) {
+          // Mapear rutas
+          let angularRoute = '';
+          if (ruta === '/carrito') angularRoute = 'carrito';
+          else if (ruta === '/suscripciones') angularRoute = 'suscripciones';
+          else if (ruta === '/clima') angularRoute = 'clima';
+
+          // Cambia el src del iframe para forzar la navegación
+          iframe.src = `http://localhost:3002/${angularRoute}?microfrontend=true`;
+        }
+        
+        console.log('✅ Módulo Angular cargado exitosamente');
+        
+      } catch (error) {
+        console.error('❌ Error cargando módulo Angular:', error);
+        
+        // Mostrar mensaje de error
+        const angularContainer = document.getElementById('angular-container');
+        angularContainer.innerHTML = `
+          <div class="min-h-screen flex items-center justify-center">
+            <div class="text-center space-y-6 p-8">
+              <div class="text-6xl">⚠️</div>
+              <h2 class="text-3xl font-bold text-stone-800">Error al cargar módulo</h2>
+              <p class="text-stone-600 text-lg max-w-md">
+                No se pudo cargar el módulo Angular. 
+                Asegúrate de que el servidor esté ejecutándose en el puerto 3002.
+              </p>
+              <button onclick="navegarA('/')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-emerald-600 text-white rounded-lg hover:from-amber-700 hover:to-emerald-700 transition-all duration-300 font-medium">
+                Volver al Inicio
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Función para cargar módulo Vue
+    async function loadVueModule(ruta) {
+      try {
+        console.log('🔄 Cargando módulo Vue para ruta:', ruta);
+        
+        // Ocultar otros contenedores
+        const dashboardContent = document.getElementById('dashboard-content');
+        const microfrontendContainer = document.getElementById('microfrontend-container');
+        const angularContainer = document.getElementById('angular-container');
+        const vueContainer = document.getElementById('vue-container');
+        
+        dashboardContent.style.display = 'none';
+        if (microfrontendContainer) {
+          microfrontendContainer.style.display = 'none';
+        }
+        if (angularContainer) {
+          angularContainer.style.display = 'none';
+        }
+        vueContainer.style.display = 'block';
+        
+        // Obtener el iframe de Vue
+        const iframe = document.getElementById('vue-iframe');
+        if (iframe) {
+          // Cargar la aplicación Vue en el puerto 3003 con la ruta específica
+          let vueRoute = '/perfil'; // Ruta por defecto
+          if (ruta === '/historial') {
+            vueRoute = '/historial';
+          } else if (ruta === '/ubicacion') {
+            vueRoute = '/ubicacion';
+          }
+          console.log(`🔄 Cargando Vue en ruta: ${vueRoute}`);
+          iframe.src = `http://localhost:3003${vueRoute}`;
+          
+          // Configurar el iframe para adaptarse al contenido
+          iframe.style.height = '100vh'; // Altura inicial
+          iframe.style.minHeight = '600px'; // Altura mínima
+          
+              // Escuchar mensajes de altura desde Vue
+    window.addEventListener('message', function(event) {
+      if (event.origin === 'http://localhost:3003' && event.data.type === 'VUE_HEIGHT') {
+        adjustVueIframeHeight(event.data.height);
+      }
+    });
+
+    // Escuchar mensajes desde React para navegar
+    window.addEventListener('message', function(event) {
+      if (event.origin === 'http://localhost:3001' && event.data.type === 'NAVIGATE_TO') {
+        console.log('🔄 Navegando desde React a:', event.data.route);
+        if (event.data.experiencia) {
+          // Guardar la experiencia para pasarla a Vue
+          window.experienciaSeleccionada = event.data.experiencia;
+        }
+        navegarA(event.data.route);
+      }
+    });
+          
+          // Cuando el iframe se carga, solicitar la altura y enviar datos si es necesario
+          iframe.onload = function() {
+            console.log('✅ Iframe Vue cargado, solicitando altura del contenido');
+            // Esperar un poco para que Vue se renderice completamente
+            setTimeout(() => {
+              iframe.contentWindow.postMessage({ type: 'GET_HEIGHT' }, 'http://localhost:3003');
+              
+              // Si hay experiencia seleccionada y estamos en ubicación, enviarla
+              if (window.experienciaSeleccionada && vueRoute === '/ubicacion') {
+                console.log('📋 Enviando datos de experiencia a Vue');
+                iframe.contentWindow.postMessage({
+                  type: 'EXPERIENCIA_DATA',
+                  experiencia: window.experienciaSeleccionada
+                }, 'http://localhost:3003');
+                // Limpiar la experiencia después de enviarla
+                window.experienciaSeleccionada = null;
+              }
+            }, 1000);
+          };
+        }
+        
+        console.log('✅ Módulo Vue cargado exitosamente');
+        
+      } catch (error) {
+        console.error('❌ Error cargando módulo Vue:', error);
+        
+        // Mostrar mensaje de error
+        const vueContainer = document.getElementById('vue-container');
+        vueContainer.innerHTML = `
+          <div class="min-h-screen flex items-center justify-center">
+            <div class="text-center space-y-6 p-8">
+              <div class="text-6xl">⚠️</div>
+              <h2 class="text-3xl font-bold text-stone-800">Error al cargar módulo</h2>
+              <p class="text-stone-600 text-lg max-w-md">
+                No se pudo cargar el módulo Vue. 
+                Asegúrate de que el servidor esté ejecutándose en el puerto 3003.
+              </p>
+              <button onclick="navegarA('/')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-emerald-600 text-white rounded-lg hover:from-amber-700 hover:to-emerald-700 transition-all duration-300 font-medium">
+                Volver al Inicio
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Función para ajustar la altura del iframe Vue
+    function adjustVueIframeHeight(height) {
+      const iframe = document.getElementById('vue-iframe');
+      const vueContainer = document.getElementById('vue-container');
+      
+      if (iframe && vueContainer) {
+        // Ajustar altura del iframe
+        const adjustedHeight = Math.max(height + 50, 600); // Agregar padding y altura mínima
+        iframe.style.height = `${adjustedHeight}px`;
+        
+        // Ajustar altura del contenedor
+        vueContainer.style.height = `${adjustedHeight}px`;
+        
+        console.log(`📏 Ajustando altura del iframe Vue a: ${adjustedHeight}px`);
+      }
+    }
+
+    // Función para cargar la vista de ubicación de Vue desde React
+    function loadVueUbicacion(experiencia) {
+      try {
+        console.log('🔄 Cargando vista de ubicación de Vue con experiencia:', experiencia);
+        
+        // Ocultar otros contenedores
+        const dashboardContent = document.getElementById('dashboard-content');
+        const microfrontendContainer = document.getElementById('microfrontend-container');
+        const angularContainer = document.getElementById('angular-container');
+        const vueContainer = document.getElementById('vue-container');
+        
+        dashboardContent.style.display = 'none';
+        if (microfrontendContainer) {
+          microfrontendContainer.style.display = 'none';
+        }
+        if (angularContainer) {
+          angularContainer.style.display = 'none';
+        }
+        vueContainer.style.display = 'block';
+        
+        // Obtener el iframe de Vue
+        const iframe = document.getElementById('vue-iframe');
+        if (iframe) {
+          // Cargar la vista de ubicación de Vue
+          iframe.src = `http://localhost:3003/ubicacion`;
+          
+          // Configurar el iframe para adaptarse al contenido
+          iframe.style.height = '100vh';
+          iframe.style.minHeight = '600px';
+          
+          // Cuando el iframe se carga, enviar los datos de la experiencia
+          iframe.onload = function() {
+            console.log('✅ Iframe Vue cargado, enviando datos de experiencia');
+            setTimeout(() => {
+              iframe.contentWindow.postMessage({
+                type: 'EXPERIENCIA_DATA',
+                experiencia: experiencia
+              }, 'http://localhost:3003');
+            }, 1000);
+          };
+        }
+        
+        console.log('✅ Vista de ubicación de Vue cargada exitosamente');
+        
+      } catch (error) {
+        console.error('❌ Error cargando vista de ubicación de Vue:', error);
+      }
+    }
+
+    // Función para cargar módulos remotos (no se usa en este enfoque)
+    async function loadRemoteModule(remoteName, modulePath) {
+      console.log('Module Federation no está habilitado, usando iframe approach');
+      return null;
+    }
+
+    // Función para verificar si el iframe está cargado
+    function isIframeLoaded() {
+      const iframe = document.getElementById('microfrontend-iframe');
+      return iframe && iframe.contentWindow;
+    }
+
+    // Función para ajustar la altura del iframe usando postMessage
+    function adjustIframeHeight(height) {
+      const iframe = document.getElementById('microfrontend-iframe');
+      if (iframe && height > 0) {
+        iframe.style.height = height + 'px';
+        console.log('📏 Iframe ajustado a altura:', height + 'px');
+      }
+    }
+
+    // Función para ajustar la altura del iframe de Angular
+    function adjustAngularIframeHeight(height) {
+      const iframe = document.getElementById('angular-iframe');
+      if (iframe && height > 0) {
+        iframe.style.height = height + 'px';
+        console.log('📏 Iframe Angular ajustado a altura:', height + 'px');
+      }
+    }
+
+    // Función para ajustar la altura del iframe de Vue
+    function adjustVueIframeHeight(height) {
+      const iframe = document.getElementById('vue-iframe');
+      if (iframe && height > 0) {
+        iframe.style.height = height + 'px';
+        console.log('📏 Iframe Vue ajustado a altura:', height + 'px');
+      }
+    }
+
+    // Estado global de autenticación
+    let authState = {
+      isAuthenticated: false,
+      user: null,
+      token: null
+    };
+
+    // Función para actualizar el estado de autenticación
+    function updateAuthState(newState) {
+      authState = { ...authState, ...newState };
+      
+      // Guardar en localStorage
+      localStorage.setItem('coffeecraft-auth', JSON.stringify(authState));
+      
+      // Notificar a todos los microfrontends
+      const iframe = document.getElementById('microfrontend-iframe');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({
+          type: 'AUTH_STATE_CHANGED',
+          authState: authState
+        }, '*');
+      }
+      
+      // Actualizar UI del shell
+      updateShellAuthUI();
+    }
+
+    // Función para actualizar la UI de autenticación del shell
+    function updateShellAuthUI() {
+      const loginBtn = document.getElementById('login-btn');
+      const registerBtn = document.getElementById('register-btn');
+      const userMenu = document.getElementById('user-menu');
+      const userName = document.getElementById('user-name');
+      const userEmail = document.getElementById('user-email');
+      const welcomeScreen = document.getElementById('welcome-screen');
+      const dashboardContent = document.getElementById('dashboard-content');
+      
+      if (authState.isAuthenticated && authState.user) {
+        // Usuario autenticado - mostrar dashboard
+        if (welcomeScreen) welcomeScreen.classList.add('hidden');
+        if (dashboardContent) dashboardContent.classList.remove('hidden');
+        
+        // Mostrar menú de usuario
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'block';
+        if (userName) userName.textContent = authState.user.name || 'Usuario';
+        if (userEmail) userEmail.textContent = authState.user.email || 'usuario@email.com';
+      } else {
+        // Usuario NO autenticado - mostrar pantalla de bienvenida
+        if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+        if (dashboardContent) dashboardContent.classList.add('hidden');
+        
+        // Mostrar botones de login/register
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (registerBtn) registerBtn.style.display = 'block';
+        if (userMenu) userMenu.style.display = 'none';
+        
+        // Limpiar información del usuario
+        if (userName) userName.textContent = 'Usuario';
+        if (userEmail) userEmail.textContent = 'usuario@email.com';
+      }
+    }
+
+    // Función para manejar login
+    // Inicializar AuthManager inmediatamente
+    let authManager = null;
+    
+    // Hacer las funciones globales
+    window.handleLogin = function() {
+      if (authManager) {
+        authManager.showAuthModal('login');
+      } else {
+        console.error('AuthManager no está disponible');
+      }
+    };
+
+    // Función para manejar logout
+    window.handleLogout = function() {
+      if (authManager) {
+        authManager.handleLogout();
+      } else {
+        console.error('AuthManager no está disponible');
+      }
+    };
+
+    // Cargar estado de autenticación al iniciar
+    function loadAuthState() {
+      // Verificar si hay una sesión existente en localStorage
+      const shellSession = localStorage.getItem('coffeecraft-shell-auth');
+      const supabaseSession = localStorage.getItem('sb-aydbyfxeudluyscfjxqp-auth-token');
+      
+      if (shellSession || supabaseSession) {
+        console.log('🔄 Sesión existente detectada, manteniendo estado');
+        // No hacer nada - dejar que AuthManager maneje la sesión
+      } else {
+        console.log('🔄 Iniciando con estado limpio - sin sesión existente');
+        authState = { isAuthenticated: false, user: null };
+        updateShellAuthUI();
+      }
+    }
+
+    // Escuchar mensajes del iframe
+    window.addEventListener('message', function(event) {
+      console.log('📨 Shell recibió mensaje:', event.data?.type, 'desde:', event.origin, 'source:', event.data?.source);
+      
+      // Verificar si el mensaje viene de React específicamente
+      if (event.origin === 'http://localhost:3001') {
+        console.log('🔍 Mensaje de React detectado:', event.data);
+      }
+      
+      // Log adicional para debug
+      console.log('🔍 Debug completo - event:', {
+        origin: event.origin,
+        data: event.data,
+        source: event.source
+      });
+      
+      // Log específico para REQUEST_AUTH_TOKEN
+      if (event.data && event.data.type === 'REQUEST_AUTH_TOKEN') {
+        console.log('🔍 REQUEST_AUTH_TOKEN detectado - source:', event.data.source, 'origin:', event.origin);
+      }
+      
+      if (event.data && event.data.type === 'IFRAME_HEIGHT') {
+        adjustIframeHeight(event.data.height);
+      } else if (event.data && event.data.type === 'ANGULAR_HEIGHT') {
+        // Angular envía su altura
+        console.log('📏 Angular envió altura:', event.data.height);
+        adjustAngularIframeHeight(event.data.height);
+      } else if (event.data && event.data.type === 'VUE_HEIGHT') {
+        // Vue envía su altura
+        console.log('📏 Vue envió altura:', event.data.height);
+        adjustVueIframeHeight(event.data.height);
+      } else if (event.data && event.data.type === 'AUTH_REQUEST') {
+        // El microfrontend solicita el estado de autenticación
+        console.log('🔍 AUTH_REQUEST recibido desde:', event.origin, 'source:', event.data?.source);
+        
+        // Determinar qué iframe envió el mensaje
+        let targetIframe = null;
+        if (event.origin === 'http://localhost:3001' || event.data?.source === 'react') {
+          targetIframe = document.getElementById('microfrontend-iframe');
+          console.log('🔑 React solicitó estado de autenticación');
+        } else if (event.origin === 'http://localhost:3002') {
+          targetIframe = document.getElementById('angular-iframe');
+          console.log('🔑 Angular solicitó estado de autenticación');
+        } else if (event.origin === 'http://localhost:3003') {
+          targetIframe = document.getElementById('vue-iframe');
+          console.log('🔑 Vue solicitó estado de autenticación');
+        }
+        
+        if (targetIframe && targetIframe.contentWindow && window.authManager) {
+          window.authManager.handleAuthRequest(targetIframe);
+        }
+      } else if (event.data && event.data.type === 'REQUEST_AUTH_TOKEN') {
+        // Angular, Vue o React solicita el token de autenticación
+        console.log('🔑 Microfrontend solicitó token de autenticación');
+        console.log('🔍 REQUEST_AUTH_TOKEN procesado - source:', event.data.source, 'origin:', event.origin);
+        console.log('🔍 REQUEST_AUTH_TOKEN - event.data completo:', JSON.stringify(event.data));
+        console.log('🔍 REQUEST_AUTH_TOKEN - event.origin:', event.origin);
+        console.log('🔍 REQUEST_AUTH_TOKEN - event.data.source:', event.data.source);
+        console.log('🔍 Debug - Mensaje completo:', event.data);
+        console.log('🔍 Debug - event.source:', event.source);
+        console.log('🔍 Debug - event.data.source:', event.data.source);
+        console.log('🔍 Debug - rutaActiva:', rutaActiva);
+        
+        // Determinar qué iframe envió el mensaje
+        let targetIframe = null;
+        const angularIframe = document.getElementById('angular-iframe');
+        const vueIframe = document.getElementById('vue-iframe');
+        const microfrontendIframe = document.getElementById('microfrontend-iframe');
+        
+        console.log('🔍 Debug - angularIframe:', !!angularIframe);
+        console.log('🔍 Debug - vueIframe:', !!vueIframe);
+        console.log('🔍 Debug - microfrontendIframe:', !!microfrontendIframe);
+        
+        if (event.source === angularIframe?.contentWindow) {
+          targetIframe = angularIframe;
+          console.log('🔑 Angular solicitó token de autenticación');
+        } else if (event.source === vueIframe?.contentWindow) {
+          targetIframe = vueIframe;
+          console.log('🔑 Vue solicitó token de autenticación');
+        } else if (event.source === microfrontendIframe?.contentWindow) {
+          targetIframe = microfrontendIframe;
+          console.log('🔑 React solicitó token de autenticación');
+        } else {
+          // Fallback: intentar determinar por el contexto actual
+          const currentRoute = rutaActiva;
+          console.log('🔍 Debug - Usando fallback, currentRoute:', currentRoute);
+          console.log('🔍 Debug - event.data.source:', event.data.source);
+          console.log('🔍 Debug - event.data.source === "react":', event.data.source === 'react');
+          console.log('🔍 Debug - event.data.source type:', typeof event.data.source);
+          console.log('🔍 Debug - event.data.source length:', event.data.source?.length);
+          
+          // Verificar si el mensaje tiene source específico o viene de React por origen
+          if (event.data.source === 'react' || event.origin === 'http://localhost:3001') {
+            targetIframe = microfrontendIframe;
+            console.log('🔑 React solicitó token de autenticación (por source u origen)');
+          } else if (event.origin === 'http://localhost:3002') {
+            targetIframe = angularIframe;
+            console.log('🔑 Angular solicitó token de autenticación (por origen)');
+          } else if (event.origin === 'http://localhost:3003') {
+            targetIframe = vueIframe;
+            console.log('🔑 Vue solicitó token de autenticación (por origen)');
+          } else if (currentRoute === '/historial' || currentRoute === '/perfil' || currentRoute === '/ubicacion') {
+            targetIframe = vueIframe;
+            console.log('🔑 Vue solicitó token de autenticación (fallback por ruta)');
+          } else if (currentRoute === '/catalogo' || currentRoute === '/experiencias' || currentRoute === '/recomendacion') {
+            targetIframe = microfrontendIframe;
+            console.log('🔑 React solicitó token de autenticación (fallback por ruta)');
+          } else {
+            targetIframe = angularIframe;
+            console.log('🔑 Angular solicitó token de autenticación (fallback por ruta)');
+          }
+        }
+        
+        if (targetIframe && targetIframe.contentWindow && window.authManager) {
+          const token = window.authManager.getAuthToken();
+          const user = window.authManager.getCurrentUser();
+          
+          // Enviar respuesta con formato específico para React
+          if (event.data.source === 'react' || event.origin === 'http://localhost:3001') {
+            console.log('🔑 Shell enviando respuesta a React:', {
+              type: 'AUTH_TOKEN_RESPONSE',
+              source: 'react',
+              data: {
+                user: user,
+                token: token
+              }
+            });
+            targetIframe.contentWindow.postMessage({
+              type: 'AUTH_TOKEN_RESPONSE',
+              source: 'react',
+              data: {
+                user: user,
+                token: token
+              }
+            }, '*');
+            console.log('✅ Shell: Respuesta enviada a React');
+          } else {
+            // Formato para Angular y Vue
+            targetIframe.contentWindow.postMessage({
+              type: 'AUTH_TOKEN_RESPONSE',
+              token: token,
+              hasToken: !!token
+            }, '*');
+          }
+          console.log('🔑 Token enviado a microfrontend:', !!token);
+        }
+      } else if (event.data && event.data.type === 'AGREGAR_AL_CARRITO') {
+        // React solicita agregar producto al carrito de Angular
+        console.log('🛒 React solicitó agregar al carrito:', event.data.data);
+        const iframe = document.getElementById('angular-iframe');
+        if (iframe && iframe.contentWindow) {
+                  iframe.contentWindow.postMessage({
+          type: 'AGREGAR_AL_CARRITO',
+          data: event.data.data
+        }, '*');
+          console.log('🛒 Mensaje enviado a Angular para agregar producto');
+        }
+      } else if (event.data && event.data.type === 'NAVIGATE_TO') {
+        // Angular solicita navegar a una ruta específica
+        console.log('🧭 Angular solicitó navegar a:', event.data.route);
+        navegarA(event.data.route);
+      } else if (event.data && event.data.type === 'NAVIGATE_TO_PRODUCT') {
+        // React solicita navegar a un producto específico en el catálogo
+        console.log('🛍️ React solicitó navegar al producto:', event.data.productoId);
+        console.log('🛍️ Ruta:', event.data.route);
+        
+        // Navegar al catálogo
+        navegarA(event.data.route);
+        
+        // Guardar el ID del producto para que el catálogo lo use
+        window.productoSeleccionado = event.data.productoId;
+        
+        // Notificar al iframe de React (catálogo) sobre el producto seleccionado
+        setTimeout(() => {
+          const iframe = document.getElementById('microfrontend-iframe');
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+              type: 'PRODUCT_SELECTED',
+              productoId: event.data.productoId
+            }, '*');
+            console.log('📤 Mensaje enviado al catálogo sobre producto seleccionado');
+          }
+        }, 1000);
+      }
+    });
+
+    function toggleMobileMenu() {
+      mobileMenuOpen = !mobileMenuOpen;
+      const mobileMenu = document.getElementById('mobile-menu');
+      const menuLines = document.querySelectorAll('.mobile-menu-line');
+      
+      if (mobileMenuOpen) {
+        mobileMenu.style.maxHeight = '24rem';
+        menuLines[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        menuLines[1].style.opacity = '0';
+        menuLines[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+      } else {
+        mobileMenu.style.maxHeight = '0';
+        menuLines[0].style.transform = 'rotate(0) translate(0, 0)';
+        menuLines[1].style.opacity = '1';
+        menuLines[2].style.transform = 'rotate(0) translate(0, 0)';
+      }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 DOM cargado, inicializando aplicación...');
+      
+      // Inicializar AuthManager
+      if (window.AuthManager) {
+        authManager = new window.AuthManager();
+        window.authManager = authManager; // Mantener referencia global también
+        console.log('✅ AuthManager inicializado');
+      } else {
+        console.error('❌ AuthManager no está disponible');
+      }
+      
+      // Renderizar navegación inicial
+      renderDesktopNav();
+      renderMobileNav();
+      mostrarContenido(rutaActiva);
+
+      // Menú móvil
+      document.getElementById('mobile-menu-button').addEventListener('click', toggleMobileMenu);
+
+      // Navegación
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.nav-button') || e.target.closest('.mobile-nav-button')) {
+          const ruta = e.target.closest('button').dataset.ruta;
+          navegarA(ruta);
+          
+          // Cerrar menú móvil si está abierto
+          if (mobileMenuOpen) {
+            toggleMobileMenu();
+          }
+        }
+
+        // Navegación desde las tarjetas del dashboard
+        if (e.target.closest('[data-navigate]')) {
+          const ruta = e.target.closest('[data-navigate]').dataset.navigate;
+          navegarA(ruta);
+        }
+      });
+
+      // Ocultar pantalla de carga y mostrar app
+      setTimeout(() => {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('app').classList.add('fade-in');
+        
+        // Mostrar dashboard directamente sin autenticación (temporal)
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const dashboardContent = document.getElementById('dashboard-content');
+        
+        if (welcomeScreen) welcomeScreen.classList.add('hidden');
+        if (dashboardContent) dashboardContent.classList.remove('hidden');
+        
+        console.log('✅ Aplicación cargada, mostrando dashboard directamente');
+      }, 2000);
+
+
+    });
+
+    // Manejar navegación del navegador
+    window.addEventListener('popstate', function(e) {
+      rutaActiva = window.location.pathname;
+      renderDesktopNav();
+      renderMobileNav();
+      mostrarContenido(rutaActiva);
+    });
+    
+
+  </script>
+
+  <!-- Modal de Autenticación -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+        <!-- Close Button -->
+        <button id="close-auth-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">
+          ✕
+        </button>
+        
+        <!-- Logo -->
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
+            ☕
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900" id="auth-title">Iniciar Sesión</h2>
+          <p class="text-gray-600 mt-2" id="auth-subtitle">Accede a tu cuenta de CoffeCraft</p>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-6">
+          <div>
+            <label for="login-email" class="block text-sm font-medium text-gray-700 mb-2">
+              Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              id="login-email" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+              placeholder="tu@email.com"
+            >
+          </div>
+          
+          <div>
+            <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="login-password" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+              placeholder="••••••••"
+            >
+          </div>
+          
+          <button 
+            type="submit"
+            class="w-full py-3 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-emerald-600 transition-all duration-200 shadow-lg"
+          >
+            Iniciar Sesión
+          </button>
+          
+          <div class="text-center">
+            <button 
+              type="button" 
+              id="switch-to-register"
+              class="text-amber-600 hover:text-amber-700 text-sm font-medium"
+            >
+              ¿No tienes cuenta? Regístrate
+            </button>
+          </div>
+        </form>
+        
+        <!-- Register Form -->
+        <form id="register-form" class="space-y-6 hidden">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="register-firstname" class="block text-sm font-medium text-gray-700 mb-2">
+                Nombre
+              </label>
+              <input 
+                type="text" 
+                id="register-firstname" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+                placeholder="Tu nombre"
+              >
+            </div>
+            
+            <div>
+              <label for="register-lastname" class="block text-sm font-medium text-gray-700 mb-2">
+                Apellido
+              </label>
+              <input 
+                type="text" 
+                id="register-lastname" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+                placeholder="Tu apellido"
+              >
+            </div>
+          </div>
+          
+          <div>
+            <label for="register-email" class="block text-sm font-medium text-gray-700 mb-2">
+              Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              id="register-email" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+              placeholder="tu@email.com"
+            >
+          </div>
+          
+          <div>
+            <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="register-password" 
+              required
+              minlength="6"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+              placeholder="Mínimo 6 caracteres"
+            >
+          </div>
+          
+          <div>
+            <label for="register-confirm-password" class="block text-sm font-medium text-gray-700 mb-2">
+              Confirmar Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="register-confirm-password" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
+              placeholder="Repite tu contraseña"
+            >
+          </div>
+          
+          <button 
+            type="submit"
+            class="w-full py-3 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-emerald-600 transition-all duration-200 shadow-lg"
+          >
+            Crear Cuenta
+          </button>
+          
+          <div class="text-center">
+            <button 
+              type="button" 
+              id="switch-to-login"
+              class="text-amber-600 hover:text-amber-700 text-sm font-medium"
+            >
+              ¿Ya tienes cuenta? Inicia sesión
+            </button>
+          </div>
+        </form>
+        
+        <!-- Loading State -->
+        <div id="auth-loading" class="hidden text-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <p class="text-gray-600" id="loading-text">Procesando...</p>
+        </div>
+        
+        <!-- Error/Success Messages -->
+        <div id="auth-message" class="hidden mt-4 p-4 rounded-lg">
+          <p id="auth-message-text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts de Autenticación -->
+  <script src="auth.js"></script>
+
+  <!-- Inicialización completada arriba -->
+  
+  <import-map-overrides-full show-when-local-storage="devtools" dev-libs></import-map-overrides-full>
+</body>
+</html>

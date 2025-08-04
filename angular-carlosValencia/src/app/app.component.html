@@ -1,0 +1,66 @@
+<div class="min-h-screen flex flex-col bg-gradient-to-br from-stone-50 via-emerald-50 to-amber-50">
+  <!-- Header (solo visible cuando NO está en modo microfrontend) -->
+  <header class="flex-shrink-0 bg-gradient-to-r from-stone-900 via-stone-800 to-emerald-900 shadow-2xl border-b-4 border-amber-600" *ngIf="!isMicrofrontend">
+    <nav class="relative">
+      <div class="container mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+          <!-- Brand Section -->
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center text-xl shadow-lg transform rotate-6">
+                ☕
+              </div>
+              <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">
+                CoffeCraft
+              </h1>
+              <p class="text-stone-400 text-xs font-medium">Ecuador Premium</p>
+            </div>
+          </div>
+          <!-- Aquí podrías agregar navegación si lo deseas -->
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="flex-1" [ngClass]="{'min-h-screen': isMicrofrontend}">
+    <router-outlet></router-outlet>
+    <nav class="w-full flex justify-end p-4 bg-white shadow">
+      <a routerLink="/perfil" class="text-gray-700 hover:text-green-600 font-semibold px-4">Perfil</a>
+    </nav>
+  </main>
+
+  <!-- Footer (solo visible cuando NO está en modo microfrontend) -->
+  <footer class="flex-shrink-0 bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 text-stone-100" *ngIf="!isMicrofrontend">
+    <div class="h-1 bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-600"></div>
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex flex-col md:flex-row md:justify-between items-center gap-6">
+        <div class="flex items-center space-x-3 mb-4 md:mb-0">
+          <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center text-lg">
+            ☕
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">
+              CoffeCraft Ecuador
+            </h3>
+            <p class="text-stone-400 text-xs">Café Artesanal de Altura</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-center space-y-1">
+          <div class="flex items-center space-x-2 text-stone-400">
+            <span class="text-emerald-400">🌱</span>
+            <span class="text-xs">100% Orgánico</span>
+          </div>
+          <div class="flex items-center space-x-2 text-stone-400">
+            <span class="text-amber-400">🏔️</span>
+            <span class="text-xs">Altura Premium</span>
+          </div>
+        </div>
+        <div class="text-stone-500 text-xs mt-4 md:mt-0">© 2025 CoffeCraft Ecuador</div>
+      </div>
+    </div>
+  </footer>
+</div>

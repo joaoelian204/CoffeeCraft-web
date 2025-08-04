@@ -1,0 +1,59 @@
+[build]
+  command = "npm run install:all && npm run build:all && npm run copy-microfrontends"
+  publish = "coffeecraft-shell/dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Configuración para Module Federation
+[[redirects]]
+  from = "/catalogoModule/*"
+  to = "/react/remoteEntry.js"
+  status = 200
+
+[[redirects]]
+  from = "/remoteEntry.js"
+  to = "/react/remoteEntry.js"
+  status = 200
+
+[[redirects]]
+  from = "/react/remoteEntry.js"
+  to = "/react/remoteEntry.js"
+  status = 200
+
+# Rutas de la aplicación SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+[[headers]]
+  for = "/react/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization" 

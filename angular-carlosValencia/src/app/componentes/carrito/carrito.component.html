@@ -1,0 +1,112 @@
+<div class="component-container h-full flex flex-col">
+  <div class="flex-1 p-6">
+    <h1 class="text-3xl font-bold text-amber-800 mb-6">Mi Carrito</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Lista de productos -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Productos (3)</h2>
+          
+          <!-- Producto 1 -->
+          <div class="flex items-center space-x-4 py-4 border-b border-gray-200">
+            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=80&h=80&fit=crop" 
+                 alt="Café Colombiano" class="w-20 h-20 rounded-lg object-cover">
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-800">Café Colombiano Premium</h3>
+              <p class="text-sm text-gray-600">250g - Grano entero</p>
+              <div class="flex items-center space-x-2 mt-2">
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">-</button>
+                <span class="w-8 text-center">2</span>
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">+</button>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-amber-600">$24.99</p>
+              <button class="text-red-500 text-sm hover:text-red-700">Eliminar</button>
+            </div>
+          </div>
+
+          <!-- Producto 2 -->
+          <div class="flex items-center space-x-4 py-4 border-b border-gray-200">
+            <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=80&h=80&fit=crop" 
+                 alt="Café Peruano" class="w-20 h-20 rounded-lg object-cover">
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-800">Café Peruano Orgánico</h3>
+              <p class="text-sm text-gray-600">500g - Molido fino</p>
+              <div class="flex items-center space-x-2 mt-2">
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">-</button>
+                <span class="w-8 text-center">1</span>
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">+</button>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-amber-600">$32.99</p>
+              <button class="text-red-500 text-sm hover:text-red-700">Eliminar</button>
+            </div>
+          </div>
+
+          <!-- Producto 3 -->
+          <div class="flex items-center space-x-4 py-4">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=80&h=80&fit=crop" 
+                 alt="Cafetera" class="w-20 h-20 rounded-lg object-cover">
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-800">Cafetera Manual</h3>
+              <p class="text-sm text-gray-600">Acero inoxidable</p>
+              <div class="flex items-center space-x-2 mt-2">
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">-</button>
+                <span class="w-8 text-center">1</span>
+                <button class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200">+</button>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-amber-600">$89.99</p>
+              <button class="text-red-500 text-sm hover:text-red-700">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de compra -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Resumen</h2>
+          
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-semibold">$172.97</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Envío</span>
+              <span class="font-semibold text-green-600">Gratis</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Impuestos</span>
+              <span class="font-semibold">$17.30</span>
+            </div>
+            <hr class="border-gray-200">
+            <div class="flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span class="text-amber-600">$190.27</span>
+            </div>
+          </div>
+
+          <button class="w-full bg-amber-600 text-white py-3 px-4 rounded-lg hover:bg-amber-700 transition-colors font-semibold text-lg">
+            Proceder al Pago
+          </button>
+
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">¿Tienes un código de descuento?</p>
+            <div class="flex mt-2">
+              <input type="text" placeholder="Código" class="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 text-sm">
+              <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-r-lg text-sm hover:bg-gray-200">
+                Aplicar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
