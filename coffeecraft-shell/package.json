@@ -52,7 +52,7 @@
     "@types/webpack-env": "^1.16.2",
     "single-spa": "^5.9.3",
     "single-spa-layout": "^1.6.0",
-    "single-spa-react": "^5.5.0"
+    "single-spa-react": "^5.1.4"
   },
   "types": "dist/coffeecraft-root-config.d.ts"
 }
