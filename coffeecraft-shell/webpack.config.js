@@ -35,14 +35,28 @@ module.exports = (webpackConfigEnv, argv) => {
           orgName,
         },
       }),
-                   new CopyWebpackPlugin({
-               patterns: [
-                 {
-                   from: "src/auth.js",
-                   to: "auth.js"
-                 }
-               ]
-             })
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: "src/auth.js",
+            to: "auth.js"
+          }
+        ]
+      }),
+      new ModuleFederationPlugin({
+        name: "coffeecraft-shell",
+        remotes: {
+          "catalogoModule": "catalogoModule@https://transcendent-granita-7f7eb4.netlify.app/react/remoteEntry.js",
+          "angularModule": "angularModule@https://transcendent-granita-7f7eb4.netlify.app/angular/remoteEntry.js",
+          "vueModule": "vueModule@https://transcendent-granita-7f7eb4.netlify.app/vue/remoteEntry.js"
+        },
+        shared: {
+          "single-spa": {
+            singleton: true,
+            requiredVersion: false
+          }
+        }
+      })
     ],
   });
 };
